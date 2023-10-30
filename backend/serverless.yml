@@ -75,7 +75,7 @@ functions:
           path: todos
           cors: true
           authorizer: Auth
-  # iam roles process 
+  # iam roles 
     iamRoleStatementsName: ${self:provider.environment.PROJECT_NAME}-get-todo-role-${self:provider.stage}
     iamRoleStatements:
       - Effect: Allow
@@ -110,6 +110,7 @@ functions:
             description: Create a new todo
             requestModels:
               'application/json': CreateTodoRequest
+    # iam roles 
     iamRoleStatementsName: ${self:provider.environment.PROJECT_NAME}-create-todo-role-${self:provider.stage}
     iamRoleStatements:
       - Effect: Allow
@@ -142,6 +143,7 @@ functions:
             description: Update todo
             requestModels:
               'application/json': UpdateTodoRequest
+    # iam roles 
     iamRoleStatementsName: ${self:provider.environment.PROJECT_NAME}-update-todo-role-${self:provider.stage}
     iamRoleStatements:
       - Effect: Allow
@@ -154,6 +156,7 @@ functions:
           - xray:PutTelemetryRecords
         Resource: 
           - '*'
+
   # TODO: Configure this function
   # Provide property for setting up CORS, Authorizer, iamRoleStatements
   DeleteTodo:
@@ -164,6 +167,7 @@ functions:
           path: todos/{todoId}
           cors: true
           authorizer: Auth
+    # iam roles 
     iamRoleStatementsName: ${self:provider.environment.PROJECT_NAME}-delete-todo-role-${self:provider.stage}
     iamRoleStatements:
       - Effect: Allow
@@ -187,6 +191,7 @@ functions:
           path: todos/{todoId}/attachment
           cors: true
           authorizer: Auth
+    # iam roles 
     iamRoleStatementsName: ${self:provider.environment.PROJECT_NAME}-generate-s3-url-todo-role-${self:provider.stage}
     iamRoleStatements:
       - Effect: Allow
@@ -206,6 +211,7 @@ functions:
 
 resources:
   Resources:
+
     # Add necessary AWS resources. You will need at least the following AWS resources
     # TODO: Fill the properties
     # Feel free to change the names as you like. 
@@ -267,6 +273,7 @@ resources:
                 KeyType: RANGE
             Projection:
               ProjectionType: ALL
+
     # TODO: Complete the bucket properties below. 
     # Do not forget to add the CorsConfiguration propoerty
     AttachmentsBucket:
@@ -291,6 +298,7 @@ resources:
                 - DELETE
                 - HEAD
               MaxAge: 3000
+
     # TODO: Complete the policy below and attach it to the bucket defined above
     # For cross referencing the name of the bucket, use "!Ref AttachmentsBucket"
     BucketPolicy:

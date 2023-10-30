@@ -69,9 +69,11 @@ async function verifyToken(authHeader: string): Promise<JwtPayload> {
   if (!signingKeys) {
     throw new Error('Keys is invalid')
   }
-
+  //  Data
   const pemData = signingKeys.x5c[0]
+  // convert
   const secretKey = `-----BEGIN CERTIFICATE-----\n${pemData}\n-----END CERTIFICATE-----\n`;
+   // verify token
   const verifiedToken = verify(token, secretKey, { algorithms: ['RS256'] }) as JwtPayload
   logger.info('verifiedToken', verifiedToken)
   return verifiedToken

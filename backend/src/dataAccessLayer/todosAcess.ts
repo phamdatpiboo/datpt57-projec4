@@ -4,9 +4,9 @@ import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 import { createLogger } from '../utils/logger'
 import { TodoItem } from '../models/TodoItem'
 import { TodoUpdate } from '../models/TodoUpdate';
+
 const AWSXRay = require('aws-xray-sdk');
 const XAWS = AWSXRay.captureAWS(AWS)
-
 const logger = createLogger('dataAccessLayer/todosAccess')
 
 // TODO: Implement the dataLayer logic
@@ -18,16 +18,14 @@ export class TodosAccess {
     ) { }
 
     /**
-     * getAllTodos.
-     * 
-     * @param userId UserId
-     * @returns items TodoItem[]
+     * creat todo item
+     * @param TodoItem 
+     * @returns 
      */
     async getAllTodos(userId: string): Promise<TodoItem[]> {
-        logger.info('Call function get all todos start')
-        logger.info(`Get get all todos for user ${userId} from ${this.todosTable} table.`)
+        logger.info('---------Get todo item start---------------')
 
-        const result = await this.docClient.query({
+        const rs = await this.docClient.query({
             TableName: this.todosTable,
             IndexName: this.todosIndex,
             KeyConditionExpression: 'userId = :userId',
@@ -35,47 +33,41 @@ export class TodosAccess {
                 ':userId': userId
             }
         })
-            .promise()
+        .promise()
 
-        const items = result.Items
-        logger.info(`Found ${items.length} todos for the user with UserId: ${userId} in ${this.todosTable} table.`)
-        logger.info('Call functuin get all todos end.')
+        const items = rs.Items
+        logger.info('---------Get todo item end---------------',rs)
         return items as TodoItem[]
     }
 
     /**
-     * createTodoItem.
-     * 
-     * @param todoItem TodoItem
-     * @returns todoItem TodoItem
+     * creat todo item
+     * @param TodoItem 
+     * @returns 
      */
     async createTodoItem(todoItem: TodoItem): Promise<TodoItem> {
-        logger.info('Call function create todos start')
-        logger.info(`Putting todo ${todoItem.todoId} into ${this.todosTable} table.`)
+        logger.info('---------Creat todo item start---------------')
 
-        const result = await this.docClient
-            .put({
+        const rs = await this.docClient.put({
                 TableName: this.todosTable,
                 Item: todoItem
             })
             .promise()
-        logger.info('Todo item create', result)
-        logger.info('Call function create todos emd')
+        logger.info('---------Creat todo item end---------------',rs)
         return todoItem as TodoItem
     }
 
     /**
-     * updateTodoItem.
+     * update todo item
      * 
-     * @param userId UserId
-     * @param todoId TodoId
-     * @param todoUpdate TodoUpdate
+     * @param userId 
+     * @param todoId 
+     * @param todoUpdate 
      */
     async updateTodoItem(todoId: string, userId: string, todoUpdate: TodoUpdate): Promise<TodoUpdate> {
-        logger.info('Call function update todos item start')
-        logger.info(`Update todo item with ID: ${todoId} in ${this.todosTable} table.`)
+        logger.info('---------Update todo item start---------------')
 
-        const result = await this.docClient.update({
+        const rs = await this.docClient.update({
             TableName: this.todosTable,
             Key: {
                 todoId,
@@ -91,32 +83,32 @@ export class TodosAccess {
                 ":done": todoUpdate.done
             },
             ReturnValues: 'ALL_NEW'
-        }).promise()
-        const updateItem = result.Attributes
-        logger.info('Call function update todos item end', updateItem)
+        })
+        .promise()
+        const updateItem = rs.Attributes
+        logger.info('---------Update todo item end---------------', rs)
         return updateItem as TodoUpdate
     }
 
     /**
-     * deleteTodoItem.
+     * delete todoitem.
      * 
      * @param todoId TodoID
      * @param userId UserId
      * @returns string
      */
     async deleteTodoItem(todoId: string, userId: string): Promise<string> {
-        logger.info('Call function delete todos item start')
-        logger.info(`Delete todo item with ID: ${todoId} from ${this.todosTable} table.`)
+        logger.info('---------Delete todo item start---------------')
 
-        const result = await this.docClient.delete({
+        const rs = await this.docClient.delete({
             TableName: this.todosTable,
             Key: {
                 todoId,
                 userId
             }
-        }).promise()
-        logger.info('Todo deleted item', result)
-        logger.info('Call function delete todos item end')
+        })
+        .promise()
+        logger.info('---------Delete todo item end---------------', rs)
         return todoId as string
     }
 }
